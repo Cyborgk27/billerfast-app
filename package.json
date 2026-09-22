@@ -6,6 +6,7 @@
     "start": "ng serve",
     "start:lan": "ng serve --host 0.0.0.0 --port 4200",
     "build": "ng build",
+    "build:render": "ng build && node scripts/inject-env.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "pwa:serve": "node scripts/pwa-server.mjs",

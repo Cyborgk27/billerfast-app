@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: billerfast-app
+    runtime: static
+    region: oregon
+    buildCommand: npm ci && npm run build:render
+    staticPublishPath: dist/billerfast-app/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    previews:
+      generation: automatic
+    envVars:
+      - key: API_URL
+        value: https://billerfast-api.onrender.com
