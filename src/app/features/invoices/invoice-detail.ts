@@ -15,6 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { InvoicesService } from '../../core/services/invoices.service';
+import { environment } from '../../../environments/environment';
 import { PageHeader } from '../../shared/components/page-header';
 import { EstadoBadge } from '../../shared/components/estado-badge';
 import type { CreatePaymentDto, InvoiceDto, PaymentMethod } from '../../core/models/invoice.model';
@@ -146,7 +147,7 @@ export class InvoiceDetail implements OnInit {
       this.snackBar.open('No se pudo generar el enlace de la factura.', 'Cerrar', { duration: 3000 });
       return;
     }
-    const link = `${window.location.origin}/api/public/invoices/${invoice.id_publico}/pdf?token=${invoice.share_token}`;
+    const link = `${environment.apiUrl}/api/public/invoices/${invoice.id_publico}/pdf?token=${invoice.share_token}`;
     const phone = this.normalizePhone(invoice.telefono_cliente);
     // La URL va en su propia línea y con un espacio al final para que WhatsApp la detecte como enlace.
     const message = `Hola ${invoice.nombre_cliente}, aquí está tu factura ${invoice.numero_factura} por ${invoice.total} USD.\n\nDescárgala aquí: ${link} `;
