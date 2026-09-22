@@ -34,8 +34,8 @@
 .user-menu-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
+  gap: 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   min-height: 44px;
 
@@ -53,6 +53,12 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 14px;
+  }
+
+  .pi-chevron-down {
+    margin-left: 6px;
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
   }
 }
 

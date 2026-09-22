@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -33,6 +34,7 @@ import type { CreatePaymentDto, InvoiceDto, PaymentMethod } from '../../core/mod
     MatInputModule,
     MatSelectModule,
     MatChipsModule,
+    MatTooltipModule,
     DatePipe,
     CurrencyPipe,
   ],
@@ -43,6 +45,7 @@ export class InvoiceDetail implements OnInit {
   protected readonly invoice = signal<InvoiceDto | null>(null);
   protected readonly loading = signal(true);
   protected readonly downloading = signal(false);
+  protected readonly regenerating = signal(false);
   protected readonly paymentSaving = signal(false);
   protected readonly planSaving = signal(false);
   protected readonly paymentForm: FormGroup;
@@ -108,6 +111,28 @@ export class InvoiceDetail implements OnInit {
         URL.revokeObjectURL(url);
       },
       error: () => this.downloading.set(false),
+    });
+  }
+
+  regeneratePdf(): void {
+    const invoice = this.invoice();
+    if (!invoice || this.regenerating()) return;
+    this.regenerating.set(true);
+    this.invoicesService.regenerateInvoicePdf(invoice.id_publico).subscribe({
+      next: (blob) => {
+        this.regenerating.set(false);
+        this.snackBar.open('PDF regenerado con los datos actuales.', 'Cerrar', { duration: 3500 });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `factura-${invoice.numero_factura}.pdf`;
+        anchor.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.regenerating.set(false);
+        this.snackBar.open('No se pudo regenerar el PDF.', 'Cerrar', { duration: 3000 });
+      },
     });
   }
 

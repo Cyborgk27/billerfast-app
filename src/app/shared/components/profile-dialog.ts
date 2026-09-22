@@ -6,9 +6,21 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/services/auth.service';
 import { SettingsService } from '../../core/services/settings.service';
+
+const AVATAR_PRESETS = [
+  { preset: 0, color: '#c94f3d', label: 'Rojo' },
+  { preset: 1, color: '#c9802f', label: 'Naranja' },
+  { preset: 2, color: '#8fb32b', label: 'Verde' },
+  { preset: 3, color: '#2fae59', label: 'Esmeralda' },
+  { preset: 4, color: '#2b8f9e', label: 'Teal' },
+  { preset: 5, color: '#4a5bc4', label: 'Índigo' },
+  { preset: 6, color: '#a33a9e', label: 'Púrpura' },
+  { preset: 7, color: '#b23a6e', label: 'Rosa' },
+];
 
 @Component({
   selector: 'app-profile-dialog',
@@ -20,17 +32,18 @@ import { SettingsService } from '../../core/services/settings.service';
     MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
+    MatTooltipModule,
   ],
   styleUrl: './profile-dialog.css',
   templateUrl: './profile-dialog.html',
 })
 export class ProfileDialog implements OnInit {
-  protected readonly user = inject(AuthService).user;
+  protected readonly user = inject(AuthService).currentUser;
+  protected readonly presets = AVATAR_PRESETS;
   protected readonly selectedImage = signal<File | null>(null);
   protected readonly previewUrl = signal<string | null>(null);
-  protected readonly uploading = signal(false);
-  protected readonly savingProfile = signal(false);
-  protected readonly savingPassword = signal(false);
+  protected readonly avatarVersion = signal(Date.now());
+  protected readonly busy = signal('');
   protected readonly profileForm: FormGroup;
   protected readonly passwordForm: FormGroup;
 
@@ -60,7 +73,7 @@ export class ProfileDialog implements OnInit {
 
   avatarUrl(): string {
     const id = this.user()?.id_publico;
-    return id ? `/api/images/user/${id}` : '';
+    return id ? `/api/images/user/${id}?v=${this.avatarVersion()}` : '';
   }
 
   onFileSelected(event: Event): void {
@@ -75,42 +88,72 @@ export class ProfileDialog implements OnInit {
 
   saveAvatar(): void {
     const file = this.selectedImage();
-    if (!file || this.uploading()) return;
-    this.uploading.set(true);
+    if (!file || this.busy()) return;
+    this.busy.set('avatar');
     this.settingsService.uploadAvatar(file).subscribe({
       next: () => {
-        this.uploading.set(false);
+        this.busy.set('');
+        this.selectedImage.set(null);
+        this.avatarVersion.set(Date.now());
         this.snackBar.open('Foto actualizada.', 'Cerrar', { duration: 3000 });
       },
-      error: () => this.uploading.set(false),
+      error: () => this.busy.set(''),
+    });
+  }
+
+  choosePreset(preset: number): void {
+    if (this.busy()) return;
+    this.busy.set('preset');
+    this.settingsService.setAvatarPreset(preset).subscribe({
+      next: () => {
+        this.busy.set('');
+        this.avatarVersion.set(Date.now());
+        this.snackBar.open('Avatar por defecto actualizado.', 'Cerrar', { duration: 3000 });
+      },
+      error: () => this.busy.set(''),
+    });
+  }
+
+  resetAvatar(): void {
+    if (this.busy()) return;
+    this.busy.set('reset');
+    this.settingsService.resetAvatar().subscribe({
+      next: () => {
+        this.busy.set('');
+        this.avatarVersion.set(Date.now());
+        this.snackBar.open('Avatar por defecto restaurado.', 'Cerrar', { duration: 3000 });
+      },
+      error: () => this.busy.set(''),
     });
   }
 
   saveProfile(): void {
-    if (this.profileForm.invalid || this.savingProfile()) return;
-    this.savingProfile.set(true);
+    if (this.profileForm.invalid || this.busy()) return;
+    this.busy.set('profile');
     const v = this.profileForm.value;
     this.authService.updateMe({ apodo: v.apodo, correo: v.correo }).subscribe({
       next: () => {
-        this.savingProfile.set(false);
+        this.busy.set('');
         this.snackBar.open('Datos guardados.', 'Cerrar', { duration: 3000 });
       },
-      error: () => this.savingProfile.set(false),
+      error: () => this.busy.set(''),
     });
   }
 
   savePassword(): void {
-    if (this.passwordForm.invalid || this.savingPassword()) return;
-    this.savingPassword.set(true);
+    if (this.passwordForm.invalid || this.busy()) return;
+    this.busy.set('password');
     const v = this.passwordForm.value;
-    this.authService.changePassword({ contrasena_actual: v.contrasena_actual, contrasena_nueva: v.contrasena_nueva }).subscribe({
-      next: () => {
-        this.savingPassword.set(false);
-        this.passwordForm.reset();
-        this.snackBar.open('Contraseña actualizada.', 'Cerrar', { duration: 3000 });
-      },
-      error: () => this.savingPassword.set(false),
-    });
+    this.authService
+      .changePassword({ contrasena_actual: v.contrasena_actual, contrasena_nueva: v.contrasena_nueva })
+      .subscribe({
+        next: () => {
+          this.busy.set('');
+          this.passwordForm.reset();
+          this.snackBar.open('Contraseña actualizada.', 'Cerrar', { duration: 3000 });
+        },
+        error: () => this.busy.set(''),
+      });
   }
 
   close(): void {

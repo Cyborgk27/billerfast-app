@@ -1,5 +1,9 @@
 <h2 mat-dialog-title>Mi cuenta</h2>
 
+@if (busy()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
 <mat-dialog-content>
   @if (user(); as user) {
     <div class="profile">
@@ -7,12 +11,14 @@
       <div class="info">
         <span class="name">{{ user.apodo }}</span>
         <span class="email">{{ user.correo }}</span>
+        <span class="role">{{ user.rol }}</span>
       </div>
     </div>
 
     <div class="section">
       <h3>Foto de perfil</h3>
-      <p class="hint">Elige una foto para tu perfil.</p>
+      <p class="hint">Sube una foto propia o elige un avatar por defecto.</p>
+
       <input
         #fileInput
         type="file"
@@ -21,13 +27,34 @@
         hidden
       />
       <div class="actions">
-        <button mat-stroked-button (click)="fileInput.click()" [disabled]="uploading()">
-          <i class="pi pi-image"></i>
-          {{ selectedImage() ? 'Cambiar foto' : 'Elegir foto' }}
+        <button mat-stroked-button (click)="fileInput.click()" [disabled]="!!busy()">
+          <i class="pi pi-upload"></i>
+          {{ selectedImage() ? 'Cambiar foto' : 'Subir foto' }}
         </button>
-        <button mat-raised-button (click)="saveAvatar()" [disabled]="!selectedImage() || uploading()">
-          Guardar foto
+        @if (selectedImage()) {
+          <button mat-raised-button (click)="saveAvatar()" [disabled]="!!busy()">
+            Guardar foto
+          </button>
+        }
+        <button mat-stroked-button (click)="resetAvatar()" [disabled]="!!busy()">
+          <i class="pi pi-undo"></i>
+          Por defecto
         </button>
+      </div>
+
+      <p class="hint preset-hint">Avatar por defecto (elige un color):</p>
+      <div class="presets" role="group" aria-label="Avatares por defecto">
+        @for (p of presets; track p.preset) {
+          <button
+            type="button"
+            class="preset"
+            [style.background]="p.color"
+            [attr.aria-label]="'Avatar ' + p.label"
+            [matTooltip]="p.label"
+            [disabled]="!!busy()"
+            (click)="choosePreset(p.preset)"
+          ></button>
+        }
       </div>
     </div>
 
@@ -44,7 +71,7 @@
           <mat-label>Correo</mat-label>
           <input matInput formControlName="correo" type="email" />
         </mat-form-field>
-        <button mat-raised-button type="submit" [disabled]="profileForm.invalid || savingProfile()">
+        <button mat-raised-button type="submit" [disabled]="profileForm.invalid || !!busy()">
           Guardar datos
         </button>
       </form>
@@ -63,11 +90,13 @@
           <mat-label>Contraseña nueva</mat-label>
           <input matInput formControlName="contrasena_nueva" type="password" />
         </mat-form-field>
-        <button mat-raised-button type="submit" [disabled]="passwordForm.invalid || savingPassword()">
+        <button mat-raised-button type="submit" [disabled]="passwordForm.invalid || !!busy()">
           Cambiar contraseña
         </button>
       </form>
     </div>
+  } @else {
+    <p class="empty">No hay información de sesión disponible.</p>
   }
 </mat-dialog-content>
 

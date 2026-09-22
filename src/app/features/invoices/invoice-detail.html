@@ -54,6 +54,10 @@
         <i class="pi pi-file-pdf"></i>
         {{ downloading() ? 'Generando…' : 'Descargar factura (PDF)' }}
       </button>
+      <button mat-stroked-button (click)="regeneratePdf()" [disabled]="regenerating()" matTooltip="Recrea el PDF con los colores y logo actuales de la tienda">
+        <i class="pi pi-refresh"></i>
+        {{ regenerating() ? 'Regenerando…' : 'Regenerar PDF' }}
+      </button>
     </mat-card-actions>
   </mat-card>
 

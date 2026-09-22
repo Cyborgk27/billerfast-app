@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Actividad de {{ user.apodo }}</h2>
+
+<mat-dialog-content>
+  <div class="user-head">
+    <img [src]="avatarUrl()" alt="Avatar" />
+    <div class="meta">
+      <span class="name">{{ user.apodo }}</span>
+      <span class="email">{{ user.correo }}</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else {
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Filtrar por acción</mat-label>
+        <mat-select [value]="actionFilter()" (selectionChange)="actionFilter.set($any($event).value); applyFilter()">
+          <mat-option value="">Todas</mat-option>
+          @for (a of actions; track a) {
+            <mat-option [value]="a">{{ meta(a).label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <span class="count">{{ filteredLogs().length }} evento(s)</span>
+    </div>
+
+    <div class="logs">
+      @if (filteredLogs().length === 0) {
+        <p class="empty">Sin actividad registrada para este usuario.</p>
+      }
+      @for (log of filteredLogs(); track log.id_publico) {
+        <div class="log-row">
+          <span class="icon" [class]="meta(log.accion).tone">
+            <i class="pi {{ meta(log.accion).icon }}"></i>
+          </span>
+          <div class="body">
+            <div class="action">{{ meta(log.accion).label }}</div>
+            <div class="detail">{{ log.detalle }}</div>
+          </div>
+          <span class="date">{{ log.fecha | date: 'short' }}</span>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cerrar</button>
+</mat-dialog-actions>

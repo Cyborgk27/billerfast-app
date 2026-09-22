@@ -61,4 +61,10 @@ export class InvoicesService {
       responseType: 'blob',
     });
   }
+
+  regenerateInvoicePdf(id: string): Observable<Blob> {
+    return this.http.post(`${this.baseUrl}/${id}/pdf/regenerate`, null, {
+      responseType: 'blob',
+    });
+  }
 }

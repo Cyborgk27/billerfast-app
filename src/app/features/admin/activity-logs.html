@@ -1,0 +1,112 @@
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Registro de actividad</h1>
+    <p class="page-sub">Todos los eventos generados por los usuarios de la plataforma.</p>
+  </div>
+  <a mat-stroked-button routerLink="/usuarios">
+    <i class="pi pi-users"></i>
+    Usuarios
+  </a>
+</div>
+
+<section class="filters">
+  <mat-form-field appearance="outline" class="user-field">
+    <mat-label>Usuario</mat-label>
+    <mat-select [value]="userFilter()" (selectionChange)="userFilter.set($any($event).value); applyFilters()">
+      <mat-option value="">Todos</mat-option>
+      @for (u of users(); track u.id_publico) {
+        <mat-option [value]="u.id_publico">{{ u.apodo }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="action-field">
+    <mat-label>Acción</mat-label>
+    <mat-select [value]="actionFilter()" (selectionChange)="actionFilter.set($any($event).value); applyFilters()">
+      <mat-option value="">Todas</mat-option>
+      @for (a of actions; track a) {
+        <mat-option [value]="a">{{ meta(a).label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="date-field">
+    <mat-label>Desde</mat-label>
+    <input matInput [matDatepicker]="dpFrom" [value]="desde()" (dateChange)="desde.set($any($event).value); applyFilters()" />
+    <mat-datepicker-toggle matIconSuffix [for]="dpFrom"></mat-datepicker-toggle>
+    <mat-datepicker #dpFrom></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="date-field">
+    <mat-label>Hasta</mat-label>
+    <input matInput [matDatepicker]="dpTo" [value]="hasta()" (dateChange)="hasta.set($any($event).value); applyFilters()" />
+    <mat-datepicker-toggle matIconSuffix [for]="dpTo"></mat-datepicker-toggle>
+    <mat-datepicker #dpTo></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-stroked-button (click)="userFilter.set(''); actionFilter.set(''); desde.set(null); hasta.set(null); applyFilters()">
+    <i class="pi pi-times"></i>
+    Limpiar
+  </button>
+</section>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (!loading() && logs().length === 0) {
+  <p class="empty">No hay eventos registrados con los filtros seleccionados.</p>
+}
+
+<div class="feed">
+  @for (log of logs(); track log.id_publico) {
+    <mat-card class="log-card">
+      <mat-card-content>
+        <div class="log-row">
+          <span class="icon" [class]="meta(log.accion).tone">
+            <i class="pi {{ meta(log.accion).icon }}"></i>
+          </span>
+
+          <div class="body">
+            <div class="head-line">
+              <span class="action">{{ meta(log.accion).label }}</span>
+              <span class="date">{{ log.fecha | date: 'short' }}</span>
+            </div>
+            <div class="detail">{{ log.detalle }}</div>
+            <div class="actor">
+              @if (log.usuario_id_publico) {
+                <img [src]="avatarUrl(log.usuario_id_publico)" alt="" />
+              }
+              <span>
+                {{ log.usuario_apodo || 'Sistema / Invitado' }}
+                @if (log.usuario_correo) {
+                  <small>{{ log.usuario_correo }}</small>
+                }
+              </span>
+              @if (log.usuario_objetivo) {
+                <span class="target">
+                  <i class="pi pi-arrow-right"></i>
+                  {{ log.usuario_objetivo }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+
+@if (logs().length > 0) {
+  <div class="pagination">
+    <button mat-stroked-button [disabled]="page() <= 1" (click)="previous()">
+      <i class="pi pi-chevron-left"></i>
+      Anterior
+    </button>
+    <span class="page-info">Página {{ page() }} de {{ totalPages() }} · {{ total() }} eventos</span>
+    <button mat-stroked-button [disabled]="page() >= totalPages()" (click)="next()">
+      Siguiente
+      <i class="pi pi-chevron-right"></i>
+    </button>
+  </div>
+}

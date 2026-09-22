@@ -78,6 +78,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/users').then((m) => m.Users),
       },
+      {
+        path: 'actividad',
+        loadComponent: () =>
+          import('./features/admin/activity-logs').then((m) => m.ActivityLogs),
+      },
       { path: '**', redirectTo: '' },
     ],
   },

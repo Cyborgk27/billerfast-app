@@ -45,6 +45,18 @@ export class SettingsService {
       .pipe(map(() => undefined));
   }
 
+  resetAvatar(): Observable<void> {
+    return this.http
+      .put<ApiResponse<unknown>>(`${this.baseUrl}/avatar/default`, null)
+      .pipe(map(() => undefined));
+  }
+
+  setAvatarPreset(preset: number): Observable<void> {
+    return this.http
+      .put<ApiResponse<unknown>>(`${this.baseUrl}/avatar/preset`, { preset })
+      .pipe(map(() => undefined));
+  }
+
   updateNotifications(settings: NotificationSettings): Observable<NotificationSettings> {
     return this.http
       .put<ApiResponse<NotificationSettings>>(`${this.baseUrl}/notifications`, settings)
