@@ -123,7 +123,8 @@ export class InvoiceDetail implements OnInit {
     }
     const link = `${window.location.origin}/api/public/invoices/${invoice.id_publico}/pdf?token=${invoice.share_token}`;
     const phone = this.normalizePhone(invoice.telefono_cliente);
-    const message = `Hola ${invoice.nombre_cliente}, aquí está tu factura ${invoice.numero_factura} por ${invoice.total} USD. Descárgala aquí: ${link}`;
+    // La URL va en su propia línea y con un espacio al final para que WhatsApp la detecte como enlace.
+    const message = `Hola ${invoice.nombre_cliente}, aquí está tu factura ${invoice.numero_factura} por ${invoice.total} USD.\n\nDescárgala aquí: ${link} `;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
   }
 
