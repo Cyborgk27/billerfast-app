@@ -16,6 +16,8 @@ export interface IssuerInfo {
   correo?: string;
   telefono?: string;
   direccion?: string;
+  establecimiento?: string;
+  punto_emision?: string;
   color_factura?: string;
   color_factura_2?: string;
 }

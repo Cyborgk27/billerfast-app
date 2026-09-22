@@ -59,6 +59,23 @@
         <input matInput formControlName="direccion" />
       </mat-form-field>
 
+      <mat-form-field appearance="outline">
+        <mat-label>Establecimiento (SRI)</mat-label>
+        <input matInput formControlName="establecimiento" maxlength="3" />
+        <mat-hint>Formato SRI: 001</mat-hint>
+        @if (issuerForm.get('establecimiento')?.invalid) {
+          <mat-error>Debe tener 3 dígitos (ej. 001)</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Punto de emisión (SRI)</mat-label>
+        <input matInput formControlName="punto_emision" maxlength="3" />
+        <mat-hint>Formato SRI: 001</mat-hint>
+        @if (issuerForm.get('punto_emision')?.invalid) {
+          <mat-error>Debe tener 3 dígitos (ej. 001)</mat-error>
+        }
+      </mat-form-field>
+
       <div class="full colors">
         <span class="colors-title">Colores de la factura</span>
         <div class="color-row">

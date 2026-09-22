@@ -62,6 +62,8 @@ export class Settings implements OnInit {
       correo: ['', Validators.email],
       telefono: [''],
       direccion: [''],
+      establecimiento: ['001', Validators.pattern('^[0-9]{3}$')],
+      punto_emision: ['001', Validators.pattern('^[0-9]{3}$')],
       color_factura: ['#3867d6'],
       color_factura_2: ['#0f172a'],
     });
@@ -85,6 +87,8 @@ export class Settings implements OnInit {
           correo: issuer.correo ?? '',
           telefono: issuer.telefono ?? '',
           direccion: issuer.direccion ?? '',
+          establecimiento: issuer.establecimiento ?? '001',
+          punto_emision: issuer.punto_emision ?? '001',
           color_factura: issuer.color_factura ? '#' + issuer.color_factura : '#3867d6',
           color_factura_2: issuer.color_factura_2 ? '#' + issuer.color_factura_2 : '#0f172a',
         });
