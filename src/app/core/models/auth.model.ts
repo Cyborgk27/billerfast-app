@@ -25,3 +25,13 @@ export interface LoginResponse {
   expira_en: string;
   usuario: UserInfo;
 }
+
+export interface UpdateMeRequest {
+  apodo?: string;
+  correo?: string;
+}
+
+export interface ChangePasswordRequest {
+  contrasena_actual: string;
+  contrasena_nueva: string;
+}

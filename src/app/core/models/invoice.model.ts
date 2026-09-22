@@ -93,4 +93,5 @@ export interface InvoiceDto {
   pagado: number;
   saldo_pendiente: number;
   estado: string;
+  share_token?: string;
 }

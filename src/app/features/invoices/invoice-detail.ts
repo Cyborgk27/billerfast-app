@@ -117,29 +117,14 @@ export class InvoiceDetail implements OnInit {
       this.snackBar.open('El cliente no tiene teléfono registrado.', 'Cerrar', { duration: 3000 });
       return;
     }
-    this.downloading.set(true);
-    this.invoicesService.getInvoicePdf(invoice.id_publico).subscribe({
-      next: (blob) => {
-        this.downloading.set(false);
-        const file = new File([blob], `factura-${invoice.numero_factura}.pdf`, { type: 'application/pdf' });
-        const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean; share?: (data: ShareData) => Promise<void> };
-
-        if (nav.canShare && nav.share && nav.canShare({ files: [file] })) {
-          // Móvil: abre la hoja de compartir (WhatsApp adjunta la factura)
-          nav.share({
-            files: [file],
-            title: `Factura ${invoice.numero_factura}`,
-            text: `Hola ${invoice.nombre_cliente}, aquí está tu factura ${invoice.numero_factura} por ${invoice.total} USD.`,
-          }).catch(() => {});
-        } else {
-          // Escritorio: enlace de texto
-          const phone = this.normalizePhone(invoice.telefono_cliente!);
-          const message = `Hola ${invoice.nombre_cliente}, aquí está tu factura ${invoice.numero_factura} por ${invoice.total} USD. ¡Gracias por tu compra!`;
-          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
-        }
-      },
-      error: () => this.downloading.set(false),
-    });
+    if (!invoice.share_token) {
+      this.snackBar.open('No se pudo generar el enlace de la factura.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    const link = `${window.location.origin}/api/public/invoices/${invoice.id_publico}/pdf?token=${invoice.share_token}`;
+    const phone = this.normalizePhone(invoice.telefono_cliente);
+    const message = `Hola ${invoice.nombre_cliente}, aquí está tu factura ${invoice.numero_factura} por ${invoice.total} USD. Descárgala aquí: ${link}`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
   }
 
   private normalizePhone(phone: string): string {

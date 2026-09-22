@@ -10,7 +10,8 @@
     "test": "ng test",
     "pwa:serve": "node scripts/pwa-server.mjs",
     "pwa:tunnel": "npx cloudflared@latest tunnel --url http://localhost:4300",
-    "pwa:all": "npm run build && npm run pwa:serve"
+    "pwa:all": "npm run build && npm run pwa:serve",
+    "favicon": "node scripts/gen-favicon.mjs"
   },
   "private": true,
   "packageManager": "npm@11.16.0",

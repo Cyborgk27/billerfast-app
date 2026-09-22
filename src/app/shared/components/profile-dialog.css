@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 
   .avatar {
     width: 72px;
@@ -29,18 +29,44 @@
   }
 }
 
-.hint {
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 13px;
-  margin: 0 0 14px;
-}
+.section {
+  padding: 10px 0 4px;
 
-.actions {
-  display: flex;
-  gap: 12px;
+  h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+  }
 
-  button {
-    min-height: 44px;
-    flex: 1;
+  .hint {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 13px;
+    margin: 0 0 10px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+
+    button {
+      min-height: 44px;
+      flex: 1;
+    }
+  }
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    button {
+      min-height: 46px;
+      margin-top: 6px;
+    }
   }
 }

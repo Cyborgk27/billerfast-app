@@ -1,10 +1,6 @@
 <h2 mat-dialog-title>Mi cuenta</h2>
 
 <mat-dialog-content>
-  @if (uploading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  }
-
   @if (user(); as user) {
     <div class="profile">
       <img class="avatar" [src]="previewUrl() ?? avatarUrl()" alt="Foto de perfil" />
@@ -14,27 +10,63 @@
       </div>
     </div>
 
-    <p class="hint">Elige una foto para tu perfil (se verá junto a tu nombre).</p>
+    <div class="section">
+      <h3>Foto de perfil</h3>
+      <p class="hint">Elige una foto para tu perfil.</p>
+      <input
+        #fileInput
+        type="file"
+        accept=".png,.jpg,.jpeg,.webp,.gif,.svg"
+        (change)="onFileSelected($event)"
+        hidden
+      />
+      <div class="actions">
+        <button mat-stroked-button (click)="fileInput.click()" [disabled]="uploading()">
+          <i class="pi pi-image"></i>
+          {{ selectedImage() ? 'Cambiar foto' : 'Elegir foto' }}
+        </button>
+        <button mat-raised-button (click)="saveAvatar()" [disabled]="!selectedImage() || uploading()">
+          Guardar foto
+        </button>
+      </div>
+    </div>
 
-    <input
-      #fileInput
-      type="file"
-      accept=".png,.jpg,.jpeg,.webp,.gif,.svg"
-      (change)="onFileSelected($event)"
-      hidden
-    />
-    <div class="actions">
-      <button mat-stroked-button (click)="fileInput.click()">
-        <i class="pi pi-image"></i>
-        {{ selectedImage() ? 'Cambiar foto' : 'Elegir foto' }}
-      </button>
-      <button
-        mat-raised-button
-        (click)="save()"
-        [disabled]="!selectedImage() || uploading()"
-      >
-        Guardar foto
-      </button>
+    <mat-divider></mat-divider>
+
+    <div class="section">
+      <h3>Datos de la cuenta</h3>
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="fields">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre de usuario</mat-label>
+          <input matInput formControlName="apodo" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo" type="email" />
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="profileForm.invalid || savingProfile()">
+          Guardar datos
+        </button>
+      </form>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="section">
+      <h3>Cambiar contraseña</h3>
+      <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="fields">
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña actual</mat-label>
+          <input matInput formControlName="contrasena_actual" type="password" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña nueva</mat-label>
+          <input matInput formControlName="contrasena_nueva" type="password" />
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="passwordForm.invalid || savingPassword()">
+          Cambiar contraseña
+        </button>
+      </form>
     </div>
   }
 </mat-dialog-content>

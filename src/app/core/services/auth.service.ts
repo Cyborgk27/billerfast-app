@@ -4,9 +4,11 @@ import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type { ApiResponse } from '../models/presentation';
 import type {
+  ChangePasswordRequest,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
+  UpdateMeRequest,
   UserInfo,
 } from '../models/auth.model';
 
@@ -37,6 +39,34 @@ export class AuthService {
     return this.http
       .post<ApiResponse<string>>(`${this.baseUrl}/register`, request)
       .pipe(map((res) => res.data));
+  }
+
+  me(): Observable<UserInfo> {
+    return this.http
+      .get<ApiResponse<UserInfo>>(`${this.baseUrl}/me`)
+      .pipe(map((res) => res.data));
+  }
+
+  updateMe(request: UpdateMeRequest): Observable<UserInfo> {
+    return this.http
+      .put<ApiResponse<UserInfo>>(`${this.baseUrl}/me`, request)
+      .pipe(
+        map((res) => {
+          this.updateUserInfo(res.data);
+          return res.data;
+        }),
+      );
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http
+      .put<ApiResponse<unknown>>(`${this.baseUrl}/me/password`, request)
+      .pipe(map(() => undefined));
+  }
+
+  updateUserInfo(user: UserInfo): void {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    this.userSignal.set(user);
   }
 
   logout(): void {

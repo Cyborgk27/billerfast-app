@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class InstallDialog {
   protected readonly dialogRef = inject(MatDialogRef<InstallDialog>);
+  protected readonly secure = window.isSecureContext;
 
   close(): void {
     this.dialogRef.close();
