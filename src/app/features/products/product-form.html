@@ -1,0 +1,91 @@
+<app-page-header (back)="cancel()">{{ isEdit() ? 'Editar producto' : 'Nuevo producto' }}</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="product-form">
+  <mat-form-field appearance="outline">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" maxlength="100" />
+    @if (form.controls['nombre'].hasError('required')) {
+      <mat-error>El nombre es obligatorio</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Código</mat-label>
+    <input matInput formControlName="code" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Presentación</mat-label>
+    <mat-select formControlName="presentacion">
+      <mat-option value="Unidad">Por unidad</mat-option>
+      <mat-option value="Paca">Por paca (caja)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ form.value.presentacion === 'Paca' ? 'Precio por paca' : 'Precio por unidad' }}</mat-label>
+      <input matInput formControlName="precio_venta" type="number" min="0.01" max="1000000" />
+      @if (form.controls['precio_venta'].hasError('required')) {
+        <mat-error>Obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Precio de costo (opcional)</mat-label>
+      <input matInput formControlName="precio_costo" type="number" min="0" max="1000000" />
+    </mat-form-field>
+  </div>
+
+  @if (form.value.presentacion === 'Paca') {
+    <mat-form-field appearance="outline">
+      <mat-label>Unidades por paca</mat-label>
+      <input matInput formControlName="cantidad_por_paca" type="number" min="1" />
+      @if (form.controls['cantidad_por_paca'].hasError('min')) {
+        <mat-error>Mínimo 1</mat-error>
+      }
+    </mat-form-field>
+  }
+
+  <mat-form-field appearance="outline">
+    <mat-label>Stock disponible</mat-label>
+    <input matInput formControlName="stock" type="number" min="0" />
+    @if (form.controls['stock'].hasError('min')) {
+      <mat-error>No puede ser negativo</mat-error>
+    }
+  </mat-form-field>
+
+  <div class="image-field">
+    <input
+      #imageInput
+      type="file"
+      accept=".png,.jpg,.jpeg,.webp,.gif,.svg"
+      (change)="onImageSelected($event)"
+      hidden
+    />
+    @if (selectedImage()) {
+      <img class="image-preview" [src]="imagePreviewUrl()" alt="Vista previa" />
+    } @else if (currentImageUrl(); as url) {
+      <img class="image-preview" [src]="url" alt="Imagen actual" />
+    }
+    <button mat-stroked-button type="button" (click)="imageInput.click()">
+      <i class="pi pi-image"></i>
+      {{ selectedImage() ? 'Cambiar imagen' : 'Subir imagen' }}
+    </button>
+  </div>
+
+  <div class="form-actions">
+    <button mat-stroked-button type="button" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button type="submit" [disabled]="form.invalid || saving()">
+      @if (saving()) {
+        Guardando…
+      } @else {
+        {{ isEdit() ? 'Guardar cambios' : 'Crear producto' }}
+      }
+    </button>
+  </div>
+</form>

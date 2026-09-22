@@ -1,0 +1,112 @@
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 4px;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-family: 'Poppins', sans-serif;
+}
+
+.desktop-nav {
+  display: flex;
+  gap: 4px;
+  margin-left: 12px;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.active-link {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  min-height: 44px;
+
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .user-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+}
+
+.menu-font {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  margin-right: 8px;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 6px;
+  padding: 0 6px;
+}
+
+.menu-value {
+  margin-left: auto;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+}
+
+.content {
+  padding: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding-bottom: 88px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--mat-sys-surface-container);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 0 6px;
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
+    text-decoration: none;
+    min-height: 56px;
+    justify-content: center;
+    border-radius: 8px;
+    margin: 4px;
+
+    &.active {
+      color: var(--mat-sys-primary);
+      font-weight: 600;
+    }
+  }
+}

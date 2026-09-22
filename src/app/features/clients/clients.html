@@ -1,0 +1,55 @@
+<div class="list-header">
+  <h1 class="page-title">Clientes</h1>
+  <button mat-raised-button routerLink="/clientes/nuevo">
+    <i class="pi pi-plus"></i>
+    Nuevo
+  </button>
+</div>
+
+<mat-form-field class="search-field" appearance="outline">
+  <i class="pi pi-search" matPrefix></i>
+  <input
+    matInput
+    type="search"
+    placeholder="Buscar por nombre, cédula o correo"
+    [value]="query()"
+    (input)="query.set($any($event.target).value)"
+  />
+</mat-form-field>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (!loading() && filtered().length === 0) {
+  <p class="empty">No hay clientes registrados.</p>
+}
+
+<div class="client-list">
+  @for (client of filtered(); track client.id) {
+    <mat-card class="client-card">
+      <mat-card-content>
+        <div class="client-row">
+          <div class="client-info">
+            <span class="client-name">{{ client.nombre }}</span>
+            <span class="client-id">{{ client.identificacion }}</span>
+          </div>
+          <i class="pi pi-user avatar"></i>
+        </div>
+        <div class="client-meta">
+          <span>{{ client.correo || 'Sin correo' }}</span>
+          <span>{{ client.telefono }}</span>
+        </div>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a mat-button [routerLink]="['/clientes', client.id, 'editar']">
+          <i class="pi pi-pencil"></i>
+          Editar
+        </a>
+        <button mat-icon-button (click)="deleteClient(client)" aria-label="Eliminar">
+          <i class="pi pi-trash warn-icon"></i>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>

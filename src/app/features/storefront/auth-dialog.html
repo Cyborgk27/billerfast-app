@@ -1,0 +1,57 @@
+<div class="auth-dialog">
+  <div class="auth-hero">
+    <i class="pi pi-fire"></i>
+    <h2>Tu cuenta</h2>
+    <p>Accede a tus pedidos y compra más rápido.</p>
+  </div>
+
+  @if (busy()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <mat-tab-group mat-stretch-tabs="false" class="auth-tabs">
+    <mat-tab label="Iniciar sesión">
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="auth-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Usuario o correo</mat-label>
+          <input matInput formControlName="identificador" placeholder="Tu nombre de usuario o correo" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="contrasena" type="password" />
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="loginForm.invalid || busy()">
+          Entrar
+        </button>
+      </form>
+    </mat-tab>
+
+    <mat-tab label="Crear cuenta">
+      <form [formGroup]="registerForm" (ngSubmit)="register()" class="auth-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo" type="email" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="contrasena" type="password" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono (opcional)</mat-label>
+          <input matInput formControlName="telefono" />
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="registerForm.invalid || busy()">
+          Crear cuenta
+        </button>
+      </form>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="auth-close">
+    <button mat-button (click)="dialogRef.close(false)">Cerrar</button>
+  </div>
+</div>

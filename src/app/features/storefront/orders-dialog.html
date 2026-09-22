@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Mis pedidos</h2>
+
+<mat-dialog-content>
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (!loading() && orders().length === 0) {
+    <p class="empty">Aún no tienes pedidos.</p>
+  }
+
+  @for (order of orders(); track order.id_publico) {
+    <div class="order-row">
+      <div class="order-main">
+        <span class="order-num">{{ order.numero_factura }}</span>
+        <span class="order-date">{{ order.fecha_emision | date: 'short' }}</span>
+      </div>
+      <div class="order-side">
+        <span class="order-total">{{ order.total | currency: 'USD' }}</span>
+        <app-estado-badge [estado]="order.estado" />
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cerrar</button>
+</mat-dialog-actions>

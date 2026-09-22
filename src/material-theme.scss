@@ -1,0 +1,80 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+@use '@angular/material' as mat;
+
+$bf-theme: (
+  color: (
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: 'Poppins',
+    plain-family: 'Inter',
+  ),
+  density: 0,
+);
+
+$bf-theme-dark: (
+  color: (
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+    theme-type: dark,
+  ),
+  typography: (
+    brand-family: 'Poppins',
+    plain-family: 'Inter',
+  ),
+  density: 0,
+);
+
+html {
+  height: 100%;
+  @include mat.theme($bf-theme);
+}
+
+html.dark {
+  color-scheme: dark;
+  @include mat.theme($bf-theme-dark);
+}
+
+body {
+  // Default the application to a light color theme.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables.
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  font-family: 'Inter', system-ui, sans-serif;
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
+
+html.dark body {
+  color-scheme: dark;
+}
+
+// Accesibilidad: letra más grande
+html[data-font='large'] {
+  --mat-sys-body-large: 18px;
+  --mat-sys-body-medium: 16px;
+  --mat-sys-body-small: 14px;
+  --mat-sys-title-large: 24px;
+  --mat-sys-title-medium: 18px;
+  --mat-sys-title-small: 16px;
+  --mat-sys-label-large: 15px;
+}
+
+html[data-font='xl'] {
+  --mat-sys-body-large: 20px;
+  --mat-sys-body-medium: 18px;
+  --mat-sys-body-small: 16px;
+  --mat-sys-title-large: 28px;
+  --mat-sys-title-medium: 21px;
+  --mat-sys-title-small: 18px;
+  --mat-sys-label-large: 17px;
+}

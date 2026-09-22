@@ -1,0 +1,188 @@
+<div class="store">
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (issuer(); as issuer) {
+    <header class="store-header">
+      <div class="brand">
+        <img class="logo" [src]="logoUrl()" alt="Logo" />
+        <div>
+          <h1>{{ issuer.nombre }}</h1>
+          @if (issuer.direccion) { <span>{{ issuer.direccion }}</span> }
+          @if (issuer.telefono || issuer.correo) {
+            <span class="contact">{{ issuer.telefono }} · {{ issuer.correo }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="customer-area">
+        @if (customer(); as c) {
+          <span class="hello"><i class="pi pi-user"></i> Hola, {{ c.apodo }}</span>
+          <button mat-stroked-button (click)="openOrders()">
+            <i class="pi pi-receipt"></i>
+            Mis pedidos
+          </button>
+          <button mat-icon-button (click)="logoutCustomer()" aria-label="Salir">
+            <i class="pi pi-sign-out"></i>
+          </button>
+        } @else {
+          <button mat-flat-button (click)="openAuth()">
+            <i class="pi pi-sign-in"></i>
+            Iniciar sesión
+          </button>
+          <button mat-raised-button (click)="openAuth()">
+            Crear cuenta
+          </button>
+        }
+      </div>
+    </header>
+  }
+
+  @if (orderResult(); as order) {
+    <mat-card class="success-card">
+      <mat-card-header>
+        <i class="pi pi-check-circle success-icon"></i>
+        <mat-card-title>¡Pedido registrado!</mat-card-title>
+        <mat-card-subtitle>Factura {{ order.numero_factura }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Total a pagar: <strong>{{ order.total | currency: 'USD' }}</strong></p>
+        <p>Te contactaremos para coordinar el pago y la entrega.</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="orderResult.set(null)">Seguir comprando</button>
+      </mat-card-actions>
+    </mat-card>
+  }
+
+  <div class="layout">
+    <main>
+      @if (!loading() && products().length === 0) {
+        <p class="empty">No hay productos disponibles por el momento.</p>
+      }
+
+      <div class="bento">
+        @if (featured(); as f) {
+          <mat-card class="tile featured" (click)="addFeatured()">
+            <img [src]="productImage(f.id_publico)" alt="" />
+            <div class="tile-overlay">
+              <span class="tag">Destacado</span>
+              <h3>{{ f.nombre }}</h3>
+              <span class="tile-price">{{ f.precio_venta | currency: 'USD' }}<span class="price-unit"> / {{ f.presentacion === 'Paca' ? 'paca' : 'unidad' }}</span></span>
+            </div>
+          </mat-card>
+        }
+
+        @for (product of restProducts(); track product.id_publico) {
+          <mat-card class="tile">
+            <img [src]="productImage(product.id_publico)" alt="" />
+            <div class="tile-body">
+              <span class="tile-name">{{ product.nombre }}</span>
+              <span class="tile-price">{{ product.precio_venta | currency: 'USD' }}<span class="price-unit"> / {{ product.presentacion === 'Paca' ? 'paca' : 'unidad' }}</span></span>
+            </div>
+            <mat-card-actions>
+              <button mat-raised-button (click)="addToCart(product)" [disabled]="product.stock <= 0">
+                <i class="pi pi-shopping-cart"></i>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+
+        @if (categories().length > 0) {
+          <mat-card class="tile tile-cat">
+            <h3>Categorías</h3>
+            <div class="chips">
+              @for (cat of categories(); track cat) {
+                <span class="chip">{{ cat }}</span>
+              }
+            </div>
+          </mat-card>
+        }
+
+        <mat-card class="tile tile-promo">
+          <i class="pi pi-truck"></i>
+          <h3>Pedidos y entregas</h3>
+          <p>Agrega productos al carrito y coordina el pago y envío con nosotros.</p>
+        </mat-card>
+      </div>
+    </main>
+
+    <aside class="cart">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Carrito</mat-card-title>
+          <mat-card-subtitle>{{ cartCount() }} artículo(s)</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          @if (cart().length === 0) {
+            <p class="empty-cart">Tu carrito está vacío.</p>
+          }
+
+          @for (item of cart(); track $index) {
+            <div class="cart-item">
+              <span class="cart-name">{{ item.product.nombre }}</span>
+              <span class="cart-unit">{{ item.product.presentacion === 'Paca' ? 'Por paca' : 'Por unidad' }} · {{ item.product.precio_venta | currency: 'USD' }}</span>
+              <div class="cart-controls">
+                <mat-form-field appearance="outline">
+                  <input matInput type="number" min="1" [value]="item.cantidad" (change)="updateQuantity($index, $any($event.target).value)" />
+                </mat-form-field>
+                <button mat-icon-button (click)="removeFromCart($index)" aria-label="Quitar">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </mat-card-content>
+
+        @if (cart().length > 0) {
+          <mat-card-content>
+            <div class="cart-total">
+              <span>Total</span>
+              <span>{{ cartTotal() | currency: 'USD' }}</span>
+            </div>
+          </mat-card-content>
+        }
+
+        @if (cart().length > 0) {
+          <mat-card-content>
+            @if (customer(); as c) {
+              <p class="note">Pedido a nombre de <strong>{{ c.apodo }}</strong>. El pago se coordina al confirmar.</p>
+            } @else {
+              <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()" class="checkout">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nombre</mat-label>
+                  <input matInput formControlName="nombre" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Correo</mat-label>
+                  <input matInput formControlName="correo" type="email" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Teléfono</mat-label>
+                  <input matInput formControlName="telefono" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Cédula (opcional)</mat-label>
+                  <input matInput formControlName="identificacion" maxlength="13" />
+                </mat-form-field>
+              </form>
+            }
+            <button mat-raised-button class="order-btn" (click)="submitOrder()" [disabled]="cart().length === 0 || ordering() || (!isCustomerAuthenticated() && checkoutForm.invalid)">
+              {{ ordering() ? 'Procesando…' : 'Realizar pedido' }}
+            </button>
+          </mat-card-content>
+        }
+      </mat-card>
+    </aside>
+  </div>
+
+  <footer class="store-footer">
+    @if (issuer(); as issuer) {
+      <span>{{ issuer.nombre }}</span>
+      @if (issuer.ruc) { <span>RUC: {{ issuer.ruc }}</span> }
+      <span>Impulsado por BillerFast</span>
+    }
+  </footer>
+</div>

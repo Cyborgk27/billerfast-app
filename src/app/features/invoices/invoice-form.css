@@ -1,0 +1,110 @@
+.invoice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  > mat-form-field {
+    width: 100%;
+  }
+}
+
+.step {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+  color: var(--mat-sys-primary);
+  font-family: 'Poppins', sans-serif;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.empty {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 16px 0;
+}
+
+.opt-code {
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.create-option {
+  color: var(--mat-sys-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  i.pi {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.line {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--mat-sys-surface-container-low);
+
+  .line-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px;
+    gap: 0 12px;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .line-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  .subtotal {
+    font-weight: 600;
+  }
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  padding: 10px 0;
+
+  .total-value {
+    font-weight: 700;
+    font-size: 22px;
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+
+  button {
+    min-height: 46px;
+    flex: 1;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 520px) {
+  .line .line-fields {
+    grid-template-columns: 1fr;
+  }
+}

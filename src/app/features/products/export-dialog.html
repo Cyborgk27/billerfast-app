@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Exportar productos</h2>
+
+<mat-dialog-content>
+  <p class="hint">Elige el formato en el que quieres descargar tus productos.</p>
+
+  <div class="formats">
+    <button mat-raised-button class="format-btn excel" (click)="exportExcel()">
+      <i class="pi pi-file-excel"></i>
+      <span>Excel (.xlsx)</span>
+    </button>
+    <button mat-raised-button class="format-btn json" (click)="exportJson()">
+      <i class="pi pi-file"></i>
+      <span>JSON</span>
+    </button>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+</mat-dialog-actions>

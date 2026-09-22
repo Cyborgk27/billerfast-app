@@ -1,0 +1,88 @@
+<mat-toolbar class="app-toolbar">
+  <span class="brand">BillerFast</span>
+
+  @if (!isMobile()) {
+    <nav class="desktop-nav" aria-label="Navegación principal">
+      @for (item of navItems; track item.path) {
+        <a
+          mat-button
+          [routerLink]="item.path"
+          routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="pi pi-{{ item.icon }}"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  }
+
+  <span class="spacer"></span>
+
+  @if (currentUser(); as user) {
+    <button mat-button class="user-menu-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
+      <img class="user-avatar" [src]="'/api/images/user/' + user.id_publico" alt="Avatar" />
+      <span class="user-name">{{ user.apodo }}</span>
+      <i class="pi pi-chevron-down"></i>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-menu">
+      <button mat-menu-item (click)="openProfile()">
+        <i class="pi pi-user"></i>
+        Mi cuenta
+      </button>
+      @if (canSettings()) {
+        <button mat-menu-item routerLink="/ajustes">
+          <i class="pi pi-cog"></i>
+          Ajustes
+        </button>
+      }
+      @if (isAdmin()) {
+        <button mat-menu-item routerLink="/usuarios">
+          <i class="pi pi-users"></i>
+          Usuarios
+        </button>
+      }
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="cycleFont()">
+        <span class="menu-font">Aa</span>
+        Tamaño de letra
+        <span class="menu-value">{{ fontLabel() }}</span>
+      </button>
+      <button mat-menu-item (click)="toggleTheme()">
+        <i class="pi pi-moon"></i>
+        Tema oscuro
+        <span class="menu-value">{{ isDark() ? 'Sí' : 'No' }}</span>
+      </button>
+      <button mat-menu-item (click)="onInstall()">
+        <i class="pi pi-download"></i>
+        Instalar app
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <i class="pi pi-sign-out"></i>
+        Cerrar sesión
+      </button>
+    </mat-menu>
+  }
+</mat-toolbar>
+
+<main class="content">
+  <router-outlet />
+</main>
+
+@if (isMobile()) {
+  <nav class="bottom-nav" aria-label="Navegación móvil">
+    @for (item of navItems; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-item"
+      >
+        <i class="pi pi-{{ item.icon }}"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+}

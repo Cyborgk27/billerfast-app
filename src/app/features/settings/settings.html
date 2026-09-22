@@ -1,0 +1,137 @@
+<h1 class="page-title">Ajustes</h1>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+<section class="block">
+  <h2>Mi tienda pública</h2>
+  @if (storeSlug(); as slug) {
+    <p class="store-line">
+      Tu tienda está en
+      <a class="store-link" [routerLink]="['/tienda', slug]">/tienda/{{ slug }}</a>
+      ({{ storeName() }})
+    </p>
+  } @else {
+    <p class="muted">No se pudo obtener el enlace de tu tienda.</p>
+  }
+</section>
+
+<mat-card class="block-card">
+  <mat-card-header>
+    <mat-card-title>Perfil de la tienda</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="logo-row">
+      <img class="logo-preview" [src]="logoPreviewUrl() ?? logoUrl()" alt="Logo" />
+      <input
+        #logoInput
+        type="file"
+        accept=".png,.jpg,.jpeg,.webp,.gif,.svg"
+        (change)="onLogoSelected($event)"
+        hidden
+      />
+      <button mat-stroked-button type="button" (click)="logoInput.click()" [disabled]="logoBusy()">
+        <i class="pi pi-image"></i>
+        {{ logoBusy() ? 'Subiendo…' : 'Cambiar logo' }}
+      </button>
+    </div>
+
+    <form [formGroup]="issuerForm" (ngSubmit)="saveIssuer()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>RUC</mat-label>
+        <input matInput formControlName="ruc" maxlength="13" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Correo de contacto</mat-label>
+        <input matInput formControlName="correo" type="email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Dirección</mat-label>
+        <input matInput formControlName="direccion" />
+      </mat-form-field>
+
+      <div class="full colors">
+        <span class="colors-title">Colores de la factura</span>
+        <div class="color-row">
+          <label class="color-item">
+            <span>Color principal</span>
+            <input type="color" formControlName="color_factura" />
+          </label>
+          <label class="color-item">
+            <span>Color secundario</span>
+            <input type="color" formControlName="color_factura_2" />
+          </label>
+        </div>
+      </div>
+
+      <div class="full actions">
+        <button mat-raised-button type="submit">Guardar perfil</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-card class="block-card">
+    <mat-card-header>
+      <mat-card-title>Correo (SMTP)</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-slide-toggle formControlName="email_habilitado">Enviar correos</mat-slide-toggle>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Servidor SMTP</mat-label>
+          <input matInput formControlName="smtp_host" placeholder="smtp.gmail.com" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Puerto</mat-label>
+          <input matInput formControlName="smtp_puerto" type="number" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Usuario</mat-label>
+          <input matInput formControlName="smtp_usuario" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="smtp_contrasena" type="password" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Remitente</mat-label>
+          <input matInput formControlName="smtp_remitente" type="email" />
+        </mat-form-field>
+        <mat-slide-toggle formControlName="smtp_ssl">Usar SSL/TLS</mat-slide-toggle>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="block-card">
+    <mat-card-content>
+      <mat-slide-toggle formControlName="modo_demo">Modo demo (no envía, solo registra)</mat-slide-toggle>
+      <p class="note">
+        En modo demo los envíos se registran en el log del servidor. Desactívalo cuando configures
+        credenciales reales de SMTP. Para compartir una factura por WhatsApp, usa el botón
+        "Compartir por WhatsApp" en el detalle de la factura.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="actions">
+    <button mat-stroked-button type="button" (click)="test()" [disabled]="testing()">
+      <i class="pi pi-send"></i>
+      {{ testing() ? 'Enviando…' : 'Probar envío' }}
+    </button>
+    <button mat-raised-button type="submit" [disabled]="saving()">
+      {{ saving() ? 'Guardando…' : 'Guardar ajustes' }}
+    </button>
+  </div>
+</form>

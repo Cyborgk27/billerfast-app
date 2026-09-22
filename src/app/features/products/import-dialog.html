@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Importar productos</h2>
+
+<mat-dialog-content>
+  <p>Selecciona un archivo para importar los productos.</p>
+
+  <div class="upload-zone">
+    <input
+      #fileInput
+      type="file"
+      accept=".xlsx,.xls,.csv,.json"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+    <button mat-stroked-button type="button" (click)="fileInput.click()">
+      <i class="pi pi-folder-open"></i>
+      Elegir archivo
+    </button>
+    @if (selectedFile()) {
+      <p class="file-name">{{ selectedFile()!.name }}</p>
+    }
+  </div>
+
+  @if (uploading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancelar</button>
+  <button
+    mat-raised-button
+    [disabled]="!selectedFile() || uploading()"
+    (click)="submit()"
+  >
+    Importar
+  </button>
+</mat-dialog-actions>

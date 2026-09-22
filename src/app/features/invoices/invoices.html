@@ -1,0 +1,82 @@
+<div class="list-header">
+  <h1 class="page-title">Facturas</h1>
+  <button mat-raised-button routerLink="/facturas/nueva">
+    <i class="pi pi-plus"></i>
+    Nueva
+  </button>
+</div>
+
+<mat-form-field class="search-field" appearance="outline">
+  <i class="pi pi-search" matPrefix></i>
+  <input
+    matInput
+    type="search"
+    placeholder="Buscar por número o cliente"
+    [value]="query()"
+    (input)="search($any($event.target).value)"
+  />
+</mat-form-field>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (!loading() && invoices().length === 0) {
+  <p class="empty">No hay facturas.</p>
+}
+
+<div class="invoice-list">
+  @for (invoice of invoices(); track invoice.id_publico) {
+    <mat-card class="invoice-card">
+      <mat-card-content>
+        <a
+          class="invoice-link"
+          [routerLink]="['/facturas', invoice.id_publico]"
+        >
+          <div class="invoice-row">
+            <div class="invoice-info">
+              <span class="invoice-number">{{ invoice.numero_factura }}</span>
+              <span class="invoice-client">{{ invoice.nombre_cliente }}</span>
+              <span class="invoice-date">
+                {{ invoice.fecha_emision | date: 'short' }}
+              </span>
+            </div>
+            <div class="invoice-side">
+              <span class="invoice-total">{{ invoice.total | currency: 'USD' }}</span>
+              <span class="invoice-saldo">Saldo {{ invoice.saldo_pendiente | currency: 'USD' }}</span>
+              <app-estado-badge [estado]="invoice.estado" />
+            </div>
+          </div>
+        </a>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-raised-button class="view-btn" [routerLink]="['/facturas', invoice.id_publico]">
+          <i class="pi pi-file-pdf"></i>
+          Ver factura (PDF)
+        </a>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>
+
+@if (invoices().length > 0) {
+  <div class="pagination">
+    <button
+      mat-stroked-button
+      [disabled]="page() <= 1"
+      (click)="previous()"
+    >
+      <i class="pi pi-chevron-left"></i>
+      Anterior
+    </button>
+    <span class="page-info">Página {{ page() }} de {{ totalPages() }}</span>
+    <button
+      mat-stroked-button
+      [disabled]="!hasNext()"
+      (click)="next()"
+    >
+      Siguiente
+      <i class="pi pi-chevron-right"></i>
+    </button>
+  </div>
+}

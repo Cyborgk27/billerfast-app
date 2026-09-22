@@ -1,0 +1,81 @@
+<h1 class="page-title">Usuarios</h1>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (!loading() && users().length === 0) {
+  <p class="empty">No hay usuarios registrados.</p>
+}
+
+<div class="user-list">
+  @for (user of users(); track user.id_publico) {
+    <mat-card class="user-card">
+      <mat-card-content>
+        <div class="user-row">
+          <img class="user-avatar" [src]="avatarUrl(user.id_publico)" alt="Avatar" />
+          <div class="user-info">
+            <span class="user-name">{{ user.apodo }}</span>
+            <span class="user-email">{{ user.correo }}</span>
+            <div class="user-chips">
+              <span class="chip role">{{ user.rol }}</span>
+              @if (!user.activo) {
+                <span class="chip danger">Pendiente</span>
+              }
+              @if (user.bloqueado) {
+                <span class="chip warn">Bloqueado</span>
+              }
+              @if (user.activo && !user.bloqueado) {
+                <span class="chip ok">Activo</span>
+              }
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        @if (!user.activo) {
+          <button mat-raised-button (click)="approve(user)">
+            <i class="pi pi-check-circle"></i>
+            Aprobar
+          </button>
+        } @else {
+          <button mat-stroked-button (click)="deactivate(user)">
+            <i class="pi pi-ban"></i>
+            Desactivar
+          </button>
+        }
+        @if (user.bloqueado) {
+          <button mat-stroked-button (click)="unlock(user)">
+            <i class="pi pi-lock-open"></i>
+            Desbloquear
+          </button>
+        }
+        <button mat-stroked-button (click)="toggleLogs(user)">
+          <i class="pi pi-history"></i>
+          Logs
+        </button>
+      </mat-card-actions>
+
+      @if (openLogs()[user.id_publico]) {
+        <mat-card-content class="logs-block">
+          <h3>Actividad de {{ user.apodo }}</h3>
+          @if (logs()[user.id_publico]; as userLogs) {
+            @if (userLogs.length === 0) {
+              <p class="empty">Sin actividad registrada.</p>
+            }
+            @for (log of userLogs; track log.id_publico) {
+              <div class="log-row">
+                <span class="log-action">{{ log.accion }}</span>
+                <span class="log-detail">{{ log.detalle }}</span>
+                <span class="log-date">{{ log.fecha | date: 'short' }}</span>
+              </div>
+            }
+          } @else {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+        </mat-card-content>
+      }
+    </mat-card>
+  }
+</div>

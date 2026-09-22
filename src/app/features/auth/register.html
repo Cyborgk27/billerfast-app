@@ -1,0 +1,73 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <div class="auth-hero">
+      <div class="brand-logo"><i class="pi pi-fire"></i></div>
+      <span class="brand">Crear cuenta</span>
+      <span class="brand-sub">Regístrate en BillerFast</span>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Apodo (tu usuario)</mat-label>
+          <input matInput formControlName="apodo" />
+          <mat-hint>Lo usarás para iniciar sesión, junto con tu contraseña.</mat-hint>
+          @if (form.controls['apodo'].hasError('required')) {
+            <mat-error>Obligatorio</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Correo</mat-label>
+          <input matInput formControlName="correo" type="email" autocomplete="email" />
+          @if (form.controls['correo'].hasError('required')) {
+            <mat-error>Obligatorio</mat-error>
+          } @else if (form.controls['correo'].hasError('email')) {
+            <mat-error>Correo inválido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="contrasena" type="password" autocomplete="new-password" />
+          @if (form.controls['contrasena'].hasError('required')) {
+            <mat-error>Obligatorio</mat-error>
+          } @else if (form.controls['contrasena'].hasError('minlength')) {
+            <mat-error>Mínimo 6 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Razón social (opcional)</mat-label>
+          <input matInput formControlName="razon_social" />
+        </mat-form-field>
+
+        <div class="auth-row">
+          <mat-form-field appearance="outline">
+            <mat-label>RUC (opcional)</mat-label>
+            <input matInput formControlName="ruc" maxlength="13" />
+            @if (form.controls['ruc'].hasError('pattern')) {
+              <mat-error>13 dígitos</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="codigo_establecimiento" maxlength="3" placeholder="001" />
+            @if (form.controls['codigo_establecimiento'].hasError('pattern')) {
+              <mat-error>3 dígitos</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button type="submit" [disabled]="form.invalid || loading()" class="submit-btn">
+          Crear cuenta
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <span class="hint">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></span>
+    </mat-card-actions>
+  </mat-card>
+</div>

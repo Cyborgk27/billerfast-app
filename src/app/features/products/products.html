@@ -1,0 +1,88 @@
+<div class="list-header">
+  <h1 class="page-title">Productos</h1>
+  <div class="header-actions">
+    <button mat-raised-button routerLink="/productos/nuevo">
+      <i class="pi pi-plus"></i>
+      Nuevo
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="Más opciones">
+      <i class="pi pi-ellipsis-v"></i>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+      <button mat-menu-item (click)="openImport()">
+        <i class="pi pi-upload"></i>
+        Importar productos
+      </button>
+      <button mat-menu-item (click)="exportProducts('excel')">
+        <i class="pi pi-file-excel"></i>
+        Exportar a Excel
+      </button>
+      <button mat-menu-item (click)="exportProducts('json')">
+        <i class="pi pi-file"></i>
+        Exportar a JSON
+      </button>
+    </mat-menu>
+  </div>
+</div>
+
+<mat-form-field class="search-field" appearance="outline">
+  <i class="pi pi-search" matPrefix></i>
+  <input
+    matInput
+    type="search"
+    placeholder="Buscar producto o código"
+    [value]="query()"
+    (input)="query.set($any($event.target).value)"
+  />
+</mat-form-field>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (!loading() && filtered().length === 0) {
+  <p class="empty">No hay productos. Crea el primero o importa un archivo.</p>
+}
+
+<div class="product-list">
+  @for (product of filtered(); track product.id) {
+    <mat-card class="product-card">
+      <div class="product-thumb">
+        <img [src]="'/api/images/product/' + product.id" alt="" />
+      </div>
+      <mat-card-content>
+        <div class="product-row">
+          <div class="product-info">
+            <span class="product-name">{{ product.nombre }}</span>
+            <span class="product-code">
+              {{ product.codigo ?? 'Sin código' }}
+            </span>
+          </div>
+          <div class="product-price">
+            {{ product.precio_venta | currency: 'USD' }}
+            <span class="price-label">{{ product.presentacion === 'Paca' ? '/ paca' : '/ unidad' }}</span>
+          </div>
+        </div>
+        <div class="product-meta">
+          <span class="chip">{{ product.presentacion }}</span>
+          @if (product.precio_costo) {
+            <span>Costo {{ product.precio_costo | currency: 'USD' }}</span>
+          }
+          @if (product.presentacion === 'Paca') {
+            <span>{{ product.cantidad_por_paca }} uds/paca</span>
+          }
+          <span [class.low-stock]="product.stock < 10">Stock: {{ product.stock }}</span>
+        </div>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a mat-button [routerLink]="['/productos', product.id, 'editar']">
+          <i class="pi pi-pencil"></i>
+          Editar
+        </a>
+        <button mat-icon-button (click)="deleteProduct(product)" aria-label="Eliminar">
+          <i class="pi pi-trash warn-icon"></i>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,56 @@
+/* Global styles */
+
+html {
+  font-size: 16px;
+}
+
+html[data-font='large'] {
+  font-size: 18px;
+}
+
+html[data-font='xl'] {
+  font-size: 20px;
+}
+
+body {
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+.page-title,
+.brand {
+  font-family: 'Poppins', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+i.pi {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Toques cómodos (sin que los botones se vean enormes) */
+.mat-mdc-button-base {
+  min-height: 44px;
+}
+
+.mat-mdc-icon-button {
+  min-width: 42px;
+  min-height: 42px;
+}
+
+.mat-mdc-form-field {
+  margin-bottom: 4px;
+}
+
+.warn-icon {
+  color: var(--mat-sys-error);
+}
+
+.success-icon {
+  color: #28a745;
+}

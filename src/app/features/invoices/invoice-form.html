@@ -1,0 +1,113 @@
+<app-page-header (back)="cancel()">Nueva factura</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="invoice-form">
+  <h2 class="step">1 · Elige el cliente</h2>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Cliente</mat-label>
+    <input
+      matInput
+      formControlName="cliente_busqueda"
+      [matAutocomplete]="clienteAuto"
+      (input)="onClientInput()"
+      placeholder="Buscar por nombre, cédula o correo"
+    />
+    <mat-autocomplete #clienteAuto="matAutocomplete" (optionSelected)="onClientSelected($event)">
+      <mat-option class="create-option" (onSelectionChange)="onCreateClient($event)">
+        <i class="pi pi-user-plus"></i>
+        + Crear nuevo cliente
+      </mat-option>
+      @for (client of filteredClients(); track client.id) {
+        <mat-option [value]="client.id">
+          {{ client.nombre }} — {{ client.identificacion }}
+        </mat-option>
+      }
+    </mat-autocomplete>
+    @if (form.controls['cliente_id_publico'].hasError('required')) {
+      <mat-error>Selecciona un cliente</mat-error>
+    }
+  </mat-form-field>
+
+  <h2 class="step">2 · Agrega los productos</h2>
+
+  <div formArrayName="detalles" class="lines">
+    @if (detalles.length === 0) {
+      <p class="empty">Toca "Agregar producto" para empezar.</p>
+    }
+
+    @for (line of detalles.controls; track $index) {
+      <div class="line" [formGroupName]="$index">
+        <div class="line-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Producto</mat-label>
+            <input
+              matInput
+              formControlName="producto_busqueda"
+              [matAutocomplete]="productoAuto"
+              (input)="onProductInput($index)"
+              placeholder="Buscar por nombre o código"
+            />
+            <mat-autocomplete #productoAuto="matAutocomplete" (optionSelected)="onProductSelected($index, $event)">
+              @for (product of filteredProducts($index); track product.id) {
+                <mat-option [value]="product.id">
+                  {{ product.nombre }}
+                  <span class="opt-code">{{ product.codigo }}</span>
+                </mat-option>
+              }
+            </mat-autocomplete>
+            @if (line.get('producto_id_publico')?.hasError('required')) {
+              <mat-error>Selecciona un producto</mat-error>
+            }
+            @if (productOf($index)) {
+              <mat-hint>{{ productPriceHint($index) }}</mat-hint>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Cantidad</mat-label>
+            <input #cant matInput formControlName="cantidad" type="number" min="1" />
+          </mat-form-field>
+        </div>
+
+        <div class="line-footer">
+          <span class="subtotal">{{ lineSubtotal($index) | currency: 'USD' }}</span>
+          <button
+            mat-icon-button
+            type="button"
+            (click)="removeLine($index)"
+            aria-label="Eliminar línea"
+          >
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="total-row">
+    <span>Total</span>
+    <span class="total-value">{{ total() | currency: 'USD' }}</span>
+  </div>
+
+  <div class="form-actions">
+    <button mat-stroked-button type="button" (click)="addLine()">
+      <i class="pi pi-plus"></i>
+      Agregar producto
+    </button>
+    <button
+      mat-raised-button
+      type="submit"
+      [disabled]="form.invalid || detalles.length === 0 || saving()"
+    >
+      @if (saving()) {
+        Emitiendo…
+      } @else {
+        Emitir factura
+      }
+    </button>
+  </div>
+</form>

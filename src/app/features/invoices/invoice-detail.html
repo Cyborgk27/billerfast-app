@@ -1,0 +1,164 @@
+<app-page-header (back)="back()">
+  Factura {{ invoice()?.numero_factura }}
+  @if (invoice(); as inv) {
+    <span extra><app-estado-badge [estado]="inv.estado" /></span>
+  }
+</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (invoice(); as invoice) {
+  <mat-card class="invoice-card">
+    <mat-card-header>
+      <mat-card-subtitle>Emitida el {{ invoice.fecha_emision | date: 'short' }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="client-block">
+        <span class="label">Cliente</span>
+        <span class="value">{{ invoice.nombre_cliente }}</span>
+        <span class="sub">{{ invoice.identificacion_cliente }} · {{ invoice.correo_cliente ?? 'sin correo' }} · {{ invoice.telefono_cliente ?? 'sin teléfono' }}</span>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="details">
+        @for (detail of invoice.detalles; track $index) {
+          <div class="detail-row">
+            <div class="detail-info">
+              <span class="detail-name">{{ detail.codigo_producto }}</span>
+              <span class="detail-qty">{{ detail.cantidad }} × {{ detail.presentacion }} · {{ detail.precio_unitario | currency: 'USD' }}</span>
+            </div>
+            <span class="detail-subtotal">{{ detail.subtotal | currency: 'USD' }}</span>
+          </div>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="totals">
+        <div class="total-line"><span>Total</span><span>{{ invoice.total | currency: 'USD' }}</span></div>
+        <div class="total-line muted"><span>Pagado</span><span>{{ invoice.pagado | currency: 'USD' }}</span></div>
+        <div class="total-line saldo"><span>Saldo pendiente</span><span>{{ invoice.saldo_pendiente | currency: 'USD' }}</span></div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-stroked-button (click)="shareWhatsApp()" [disabled]="downloading()">
+        <i class="pi pi-whatsapp"></i>
+        Enviar factura por WhatsApp
+      </button>
+      <button mat-raised-button (click)="downloadPdf()" [disabled]="downloading()">
+        <i class="pi pi-file-pdf"></i>
+        {{ downloading() ? 'Generando…' : 'Descargar factura (PDF)' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <section class="block">
+    <h2>Registrar pago</h2>
+    <form [formGroup]="paymentForm" (ngSubmit)="registerPayment()" class="payment-form">
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Monto</mat-label>
+          <input matInput formControlName="monto" type="number" min="0.01" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Método</mat-label>
+          <mat-select formControlName="metodo">
+            @for (m of methods; track m) {
+              <mat-option [value]="m">{{ m }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha</mat-label>
+          <input matInput formControlName="fecha_pago" type="date" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Referencia (opcional)</mat-label>
+          <input matInput formControlName="referencia" />
+        </mat-form-field>
+      </div>
+      <button mat-raised-button type="submit" [disabled]="paymentForm.invalid || paymentSaving()">
+        {{ paymentSaving() ? 'Registrando…' : 'Registrar pago' }}
+      </button>
+    </form>
+  </section>
+
+  @if (invoice.cuotas.length > 0) {
+    <section class="block">
+      <h2>Cuotas</h2>
+      <div class="cuotas">
+        @for (cuota of invoice.cuotas; track cuota.id_publico) {
+          <div class="cuota-row" [class.paid]="cuota.estado === 'Pagada'">
+            <div class="cuota-info">
+              <span class="cuota-num">Cuota {{ cuota.numero }}</span>
+              <span class="cuota-date">Vence {{ cuota.vencimiento | date: 'shortDate' }} · {{ cuota.estado }}</span>
+              <span class="cuota-amount">{{ cuota.monto | currency: 'USD' }} (pagado {{ cuota.pagado | currency: 'USD' }})</span>
+            </div>
+            @if (cuota.estado !== 'Pagada') {
+              <button mat-stroked-button (click)="payInstallment(cuota.id_publico, cuota.saldo)">
+                Pagar {{ cuota.saldo | currency: 'USD' }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  } @else {
+    <section class="block">
+      <h2>Crear plan de cuotas</h2>
+      <form [formGroup]="planForm" (ngSubmit)="createPlan()" class="plan-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="tipo">
+            <mat-option value="auto">Cuotas iguales</mat-option>
+            <mat-option value="custom">Personalizadas</mat-option>
+          </mat-select>
+        </mat-form-field>
+        @if (planForm.value.tipo === 'auto') {
+          <mat-form-field appearance="outline">
+            <mat-label>Número de cuotas</mat-label>
+            <input matInput formControlName="numero_cuotas" type="number" min="1" max="60" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Periodo</mat-label>
+            <mat-select formControlName="periodo">
+              <mat-option value="semanal">Semanal</mat-option>
+              <mat-option value="quincenal">Quincenal</mat-option>
+              <mat-option value="mensual">Mensual</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de inicio</mat-label>
+            <input matInput formControlName="fecha_inicio" type="date" />
+          </mat-form-field>
+        }
+        <button mat-raised-button type="submit" [disabled]="planForm.invalid || planSaving()">
+          {{ planSaving() ? 'Creando…' : 'Crear plan' }}
+        </button>
+      </form>
+      <p class="note">Las cuotas personalizadas se configuran desde el API por ahora.</p>
+    </section>
+  }
+
+  @if (invoice.pagos.length > 0) {
+    <section class="block">
+      <h2>Historial de pagos</h2>
+      <div class="pagos">
+        @for (pago of invoice.pagos; track pago.id_publico) {
+          <div class="pago-row">
+            <div class="pago-info">
+              <span class="pago-monto">{{ pago.monto | currency: 'USD' }}</span>
+              <span class="pago-meta">{{ pago.metodo }} · {{ pago.fecha_pago | date: 'short' }}</span>
+            </div>
+            <span class="pago-ref">{{ pago.referencia ?? '—' }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+}

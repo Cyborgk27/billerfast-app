@@ -1,0 +1,56 @@
+<app-page-header (back)="cancel()">{{ isEdit() ? 'Editar cliente' : 'Nuevo cliente' }}</app-page-header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="client-form">
+  <mat-form-field appearance="outline">
+    <mat-label>Identificación / RUC (opcional)</mat-label>
+    <input matInput formControlName="identificacion" maxlength="13" />
+    @if (form.controls['identificacion'].hasError('pattern')) {
+      <mat-error>Solo dígitos</mat-error>
+    } @else if (form.controls['identificacion'].hasError('minlength')) {
+      <mat-error>Mínimo 10 dígitos</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" maxlength="150" />
+    @if (form.controls['nombre'].hasError('required')) {
+      <mat-error>Obligatorio</mat-error>
+    } @else if (form.controls['nombre'].hasError('minlength')) {
+      <mat-error>Mínimo 3 caracteres</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Correo</mat-label>
+    <input matInput formControlName="correo" type="email" maxlength="100" />
+    @if (form.controls['correo'].hasError('email')) {
+      <mat-error>Correo inválido</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Teléfono</mat-label>
+    <input matInput formControlName="telefono" />
+    @if (form.controls['telefono'].hasError('required')) {
+      <mat-error>Obligatorio</mat-error>
+    } @else if (form.controls['telefono'].hasError('pattern')) {
+      <mat-error>Formato inválido (7 a 15 dígitos)</mat-error>
+    }
+  </mat-form-field>
+
+  <div class="form-actions">
+    <button mat-stroked-button type="button" (click)="cancel()">Cancelar</button>
+    <button mat-raised-button type="submit" [disabled]="form.invalid || saving()">
+      @if (saving()) {
+        Guardando…
+      } @else {
+        {{ isEdit() ? 'Guardar cambios' : 'Crear cliente' }}
+      }
+    </button>
+  </div>
+</form>

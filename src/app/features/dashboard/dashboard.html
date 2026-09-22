@@ -1,0 +1,93 @@
+<h1 class="page-title">Resumen</h1>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (summary(); as s) {
+  <section class="cards">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <i class="pi pi-box card-avatar"></i>
+        <mat-card-title>Productos</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="value">{{ s.total_productos | number }}</span>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button routerLink="/productos">Ver productos</a>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <i class="pi pi-users card-avatar"></i>
+        <mat-card-title>Clientes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="value">{{ s.total_clientes | number }}</span>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button routerLink="/clientes">Ver clientes</a>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <i class="pi pi-receipt card-avatar"></i>
+        <mat-card-title>Facturas</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="value">{{ s.total_facturas | number }}</span>
+        <span class="sub-value">{{ s.total_facturado | currency: 'USD' }} facturado</span>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button routerLink="/facturas">Ver facturas</a>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <i class="pi pi-dollar card-avatar"></i>
+        <mat-card-title>Por cobrar</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="value">{{ s.por_cobrar | currency: 'USD' }}</span>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button routerLink="/facturas">Cobrar</a>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <i class="pi pi-box card-avatar"></i>
+        <mat-card-title>Valor de inventario</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="value">{{ s.valor_inventario | currency: 'USD' }}</span>
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button routerLink="/productos">Ver productos</a>
+      </mat-card-actions>
+    </mat-card>
+  </section>
+}
+
+<section class="quick">
+  <h2>Acciones rápidas</h2>
+  <div class="quick-grid">
+    <button mat-raised-button routerLink="/productos/nuevo">
+      <i class="pi pi-plus-circle"></i>
+      Nuevo producto
+    </button>
+    <button mat-raised-button routerLink="/clientes/nuevo">
+      <i class="pi pi-user-plus"></i>
+      Nuevo cliente
+    </button>
+    <button mat-raised-button routerLink="/facturas/nueva">
+      <i class="pi pi-plus-circle"></i>
+      Nueva factura
+    </button>
+  </div>
+</section>
