@@ -11,6 +11,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { AccessibilityService } from '../../core/services/accessibility.service';
+import { imageUrl } from '../../core/utils/media-url';
 import { ProfileDialog } from '../components/profile-dialog';
 import { InstallDialog } from '../components/install-dialog';
 
@@ -88,6 +89,11 @@ export class AppShell implements OnInit {
     } else {
       this.dialog.open(InstallDialog, { width: '420px' });
     }
+  }
+
+  avatarUrl(): string {
+    const id = this.currentUser()?.id_publico;
+    return id ? imageUrl(`/api/images/user/${id}`) : '';
   }
 
   openProfile(): void {

@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AdminService } from '../../core/services/admin.service';
 import type { ActivityLogDto, UserAdminDto } from '../../core/models/admin.model';
 import { actionMeta, actionList } from './action-meta';
+import { imageUrl } from '../../core/utils/media-url';
 
 export interface LogsDialogData {
   user: UserAdminDto;
@@ -171,7 +172,7 @@ export class LogsDialog implements OnInit {
   }
 
   avatarUrl(): string {
-    return `/api/images/user/${this.user.id_publico}`;
+    return imageUrl(`/api/images/user/${this.user.id_publico}`);
   }
 
   close(): void {

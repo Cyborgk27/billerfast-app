@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/services/auth.service';
 import { SettingsService } from '../../core/services/settings.service';
+import { imageUrl } from '../../core/utils/media-url';
 
 const AVATAR_PRESETS = [
   { preset: 0, color: '#c94f3d', label: 'Rojo' },
@@ -73,7 +74,7 @@ export class ProfileDialog implements OnInit {
 
   avatarUrl(): string {
     const id = this.user()?.id_publico;
-    return id ? `/api/images/user/${id}?v=${this.avatarVersion()}` : '';
+    return id ? imageUrl(`/api/images/user/${id}?v=${this.avatarVersion()}`) : '';
   }
 
   onFileSelected(event: Event): void {
