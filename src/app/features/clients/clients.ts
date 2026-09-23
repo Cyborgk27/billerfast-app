@@ -192,8 +192,9 @@ export class Clients implements OnInit {
 }
 
 function normalizePhone(raw: string): string {
+  if (!raw) return '';
   const cleaned = raw.replace(/[^\d+]/g, '');
-  return /^\+?\d{7,15}$/.test(cleaned) ? cleaned : '';
+  return cleaned ? cleaned : '';
 }
 
 function isValidEmail(value: string): boolean {

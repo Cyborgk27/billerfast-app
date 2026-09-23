@@ -39,8 +39,6 @@
       <input matInput formControlName="telefono" />
       @if (form.controls['telefono'].hasError('required')) {
         <mat-error>Obligatorio</mat-error>
-      } @else if (form.controls['telefono'].hasError('pattern')) {
-        <mat-error>Formato inválido (7 a 15 dígitos)</mat-error>
       }
     </mat-form-field>
   </form>

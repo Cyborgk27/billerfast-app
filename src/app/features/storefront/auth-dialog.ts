@@ -45,7 +45,7 @@ export class AuthDialog {
       nombre: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       contrasena: ['', [Validators.required, Validators.minLength(6)]],
-      telefono: ['', Validators.pattern(/^\+?\d{7,15}$/)],
+      telefono: [''],
     });
   }
 
