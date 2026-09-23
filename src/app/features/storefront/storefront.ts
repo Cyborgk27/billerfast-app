@@ -76,7 +76,7 @@ export class Storefront implements OnInit {
     this.checkoutForm = this.fb.group({
       nombre: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', [Validators.required, Validators.pattern(/^\+?\d{7,15}$/)]],
+      telefono: ['', [Validators.required]],
       identificacion: [''],
     });
   }

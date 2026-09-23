@@ -36,7 +36,7 @@ export class ClientQuickDialog {
       ],
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
       correo: ['', [Validators.email, Validators.maxLength(100)]],
-      telefono: ['', [Validators.required, Validators.pattern(/^\+?\d{7,15}$/)]],
+      telefono: ['', [Validators.required]],
     });
   }
 
