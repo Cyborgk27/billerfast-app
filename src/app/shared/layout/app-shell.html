@@ -21,7 +21,7 @@
 
   @if (currentUser(); as user) {
     <button mat-button class="user-menu-btn" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
-      <img class="user-avatar" [src]="'/api/images/user/' + user.id_publico" alt="Avatar" />
+      <img class="user-avatar" [src]="avatarUrl()" alt="Avatar" />
       <span class="user-name">{{ user.apodo }}</span>
       <i class="pi pi-chevron-down"></i>
     </button>

@@ -14,6 +14,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of, switchMap } from 'rxjs';
 import { ProductsService } from '../../core/services/products.service';
+import { imageUrl } from '../../core/utils/media-url';
 import { PageHeader } from '../../shared/components/page-header';
 import type { CreateOrUpdateProductDto } from '../../core/models/product.model';
 
@@ -60,7 +61,7 @@ export class ProductForm implements OnInit {
   }
 
   currentImageUrl(): string | null {
-    return this.currentImageId() ? `/api/images/product/${this.currentImageId()}` : null;
+    return this.currentImageId() ? imageUrl(`/api/images/product/${this.currentImageId()}`) : null;
   }
   private editingId = '';
 

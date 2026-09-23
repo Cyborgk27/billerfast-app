@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterLink } from '@angular/router';
 import { SettingsService } from '../../core/services/settings.service';
+import { imageUrl } from '../../core/utils/media-url';
 import type { NotificationSettings } from '../../core/models/settings.model';
 
 @Component({
@@ -97,7 +98,7 @@ export class Settings implements OnInit {
   }
 
   logoUrl(): string {
-    return this.storeSlug() ? `/api/images/issuer/${this.storeSlug()}` : '';
+    return this.storeSlug() ? imageUrl(`/api/images/issuer/${this.storeSlug()}`) : '';
   }
 
   onLogoSelected(event: Event): void {

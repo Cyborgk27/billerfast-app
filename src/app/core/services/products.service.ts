@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import type { ApiResponse } from '../models/presentation';
 import type {
   CreateOrUpdateProductDto,
+  ImportResultDto,
   ProductDto,
 } from '../models/product.model';
 
@@ -54,11 +55,11 @@ export class ProductsService {
       .pipe(map(() => undefined));
   }
 
-  importProducts(file: File): Observable<unknown> {
+  importProducts(file: File): Observable<ImportResultDto> {
     const formData = new FormData();
     formData.append('file', file, file.name);
     return this.http
-      .post<ApiResponse<unknown>>(`${this.baseUrl}/import`, formData)
+      .post<ApiResponse<ImportResultDto>>(`${this.baseUrl}/import`, formData)
       .pipe(map((res) => res.data));
   }
 

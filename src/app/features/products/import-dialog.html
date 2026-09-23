@@ -1,37 +1,75 @@
 <h2 mat-dialog-title>Importar productos</h2>
 
 <mat-dialog-content>
-  <p>Selecciona un archivo para importar los productos.</p>
+  @if (!result()) {
+    <p>
+      Los productos con <b>código existente</b> solo actualizarán su <b>stock</b> (el catálogo no se modifica).
+      Los <b>códigos nuevos</b> se crearán con los datos del archivo.
+    </p>
+    <p class="hint">Formatos: .xlsx (plantilla del export) o .json.</p>
 
-  <div class="upload-zone">
-    <input
-      #fileInput
-      type="file"
-      accept=".xlsx,.xls,.csv,.json"
-      (change)="onFileSelected($event)"
-      hidden
-    />
-    <button mat-stroked-button type="button" (click)="fileInput.click()">
-      <i class="pi pi-folder-open"></i>
-      Elegir archivo
-    </button>
-    @if (selectedFile()) {
-      <p class="file-name">{{ selectedFile()!.name }}</p>
+    <div class="upload-zone">
+      <input
+        #fileInput
+        type="file"
+        accept=".xlsx,.json"
+        (change)="onFileSelected($event)"
+        hidden
+      />
+      <button mat-stroked-button type="button" (click)="fileInput.click()">
+        <i class="pi pi-folder-open"></i>
+        Elegir archivo
+      </button>
+      @if (selectedFile()) {
+        <p class="file-name">{{ selectedFile()!.name }}</p>
+      }
+    </div>
+
+    @if (error()) {
+      <p class="error-text">{{ error() }}</p>
     }
-  </div>
 
-  @if (uploading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    @if (uploading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+  } @else {
+    <div class="result">
+      <p class="result-title"><i class="pi pi-check-circle"></i> Importación completada</p>
+      <ul>
+        <li><b>{{ result()!.createdCount }}</b> productos creados</li>
+        <li><b>{{ result()!.updatedCount }}</b> productos actualizados (solo stock)</li>
+        @if (result()!.skippedCount > 0) {
+          <li><b>{{ result()!.skippedCount }}</b> omitidos</li>
+        }
+      </ul>
+      @if (result()!.skipped.length > 0) {
+        <details class="skipped-details">
+          <summary>Ver detalle omitidos</summary>
+          <ul class="skipped-list">
+            @for (item of result()!.skipped; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </details>
+      }
+      @if (result()!.skippedCount === 0 && result()!.createdCount === 0 && result()!.updatedCount === 0) {
+        <p class="hint">No se encontraron cambios que aplicar.</p>
+      }
+    </div>
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Cancelar</button>
-  <button
-    mat-raised-button
-    [disabled]="!selectedFile() || uploading()"
-    (click)="submit()"
-  >
-    Importar
-  </button>
+  @if (!result()) {
+    <button mat-button (click)="close()">Cancelar</button>
+    <button
+      mat-raised-button
+      [disabled]="!selectedFile() || uploading()"
+      (click)="submit()"
+    >
+      Importar
+    </button>
+  } @else {
+    <button mat-raised-button (click)="close()">Listo</button>
+  }
 </mat-dialog-actions>

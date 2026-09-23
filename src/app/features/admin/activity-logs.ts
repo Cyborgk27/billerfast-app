@@ -13,6 +13,7 @@ import { AdminService } from '../../core/services/admin.service';
 import type { ActivityLogItemDto, UserAdminDto } from '../../core/models/admin.model';
 import type { PagedResult } from '../../core/models/paged-result.model';
 import { actionMeta, actionList } from './action-meta';
+import { imageUrl } from '../../core/utils/media-url';
 
 @Component({
   selector: 'app-activity-logs',
@@ -103,6 +104,6 @@ export class ActivityLogs implements OnInit {
   }
 
   avatarUrl(id?: string | null): string {
-    return id ? `/api/images/user/${id}` : '';
+    return id ? imageUrl(`/api/images/user/${id}`) : '';
   }
 }

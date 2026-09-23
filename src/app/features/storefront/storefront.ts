@@ -15,6 +15,7 @@ import { CustomerAuthService } from '../../core/services/customer-auth.service';
 import { AuthDialog } from './auth-dialog';
 import { OrdersDialog } from './orders-dialog';
 import type { PublicIssuerDto, PublicProductDto } from '../../core/models/storefront.model';
+import { imageUrl } from '../../core/utils/media-url';
 
 interface CartItem {
   product: PublicProductDto;
@@ -103,11 +104,11 @@ export class Storefront implements OnInit {
   }
 
   productImage(id: string): string {
-    return `/api/images/product/${id}`;
+    return imageUrl(`/api/images/product/${id}`);
   }
 
   logoUrl(): string {
-    return `/api/images/issuer/${this.slug}`;
+    return imageUrl(`/api/images/issuer/${this.slug}`);
   }
 
   openAuth(): void {

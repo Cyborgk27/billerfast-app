@@ -19,3 +19,11 @@ export interface ProductDto {
   cantidad_por_paca: number;
   stock: number;
 }
+
+export interface ImportResultDto {
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  skipped: string[];
+  totalProcessed: number;
+}

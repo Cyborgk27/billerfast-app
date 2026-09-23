@@ -48,7 +48,7 @@
   @for (product of filtered(); track product.id) {
     <mat-card class="product-card">
       <div class="product-thumb">
-        <img [src]="'/api/images/product/' + product.id" alt="" />
+        <img [src]="productImage(product.id)" alt="" />
       </div>
       <mat-card-content>
         <div class="product-row">

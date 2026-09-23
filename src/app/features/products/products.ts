@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductsService } from '../../core/services/products.service';
+import { imageUrl } from '../../core/utils/media-url';
 import type { ProductDto } from '../../core/models/product.model';
 import { ImportDialog } from './import-dialog';
 import { ExportDialog } from './export-dialog';
@@ -68,6 +69,10 @@ export class Products implements OnInit {
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  productImage(id: string): string {
+    return imageUrl(`/api/images/product/${id}`);
   }
 
   openImport(): void {

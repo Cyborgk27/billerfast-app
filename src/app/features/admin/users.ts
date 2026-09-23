@@ -14,6 +14,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { imageUrl } from '../../core/utils/media-url';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
 import type { AdminOverviewDto, UserAdminDto } from '../../core/models/admin.model';
@@ -123,7 +124,7 @@ export class Users implements OnInit {
   }
 
   avatarUrl(id: string): string {
-    return `/api/images/user/${id}`;
+    return imageUrl(`/api/images/user/${id}`);
   }
 
   rolClass(rol: string): string {
