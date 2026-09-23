@@ -97,8 +97,8 @@ export class Clients implements OnInit {
 
       for (const contact of contacts) {
         const nombre = contact.name?.[0]?.trim();
-        if (!nombre) {
-          skipped.push('(contacto sin nombre)');
+        if (!nombre || nombre.length < 3) {
+          skipped.push(nombre ? `${nombre}: nombre demasiado corto` : '(contacto sin nombre)');
           continue;
         }
 
@@ -114,11 +114,17 @@ export class Clients implements OnInit {
           continue;
         }
 
+        const email = (contact.email?.[0] ?? '').trim();
+        if (email && !isValidEmail(email)) {
+          skipped.push(`${nombre}: correo inválido (${email})`);
+          continue;
+        }
+
         const icon = contact.icon?.[0];
         const dto: ImportClientDto = {
           identificacion: '',
           nombre,
-          correo: contact.email?.[0] ?? '',
+          correo: email,
           telefono: phone,
         };
 
@@ -142,12 +148,21 @@ export class Clients implements OnInit {
       this.clientsService.importClients(clientes).subscribe({
         next: (result) => {
           this.importing.set(false);
+          const reasons = [...skipped];
+          if (result.omitidos > 0) {
+            for (const detail of result.omitidos_detalle ?? []) {
+              if (!reasons.includes(detail)) reasons.push(detail);
+            }
+          }
           const messages = [
             `${result.creados} creados`,
             result.omitidos > 0 ? `${result.omitidos} omitidos` : null,
-            skipped.length ? `${skipped.length} ya registrados en este dispositivo` : null,
+            skipped.length ? `${skipped.length} descartados antes de enviar` : null,
           ].filter(Boolean);
           this.snackBar.open(`Importación completada: ${messages.join(', ')}`, 'Cerrar', { duration: 6000 });
+          if (reasons.length) {
+            this.snackBar.open(`Motivos: ${reasons.join(' | ')}`, 'Cerrar', { duration: 10000 });
+          }
           this.loadClients();
         },
         error: () => {
@@ -179,6 +194,10 @@ export class Clients implements OnInit {
 function normalizePhone(raw: string): string {
   const cleaned = raw.replace(/[^\d+]/g, '');
   return /^\+?\d{7,15}$/.test(cleaned) ? cleaned : '';
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function blobToDataUrl(blob: Blob): Promise<string> {
