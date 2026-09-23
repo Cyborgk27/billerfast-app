@@ -1,9 +1,17 @@
 <div class="list-header">
   <h1 class="page-title">Clientes</h1>
-  <button mat-raised-button routerLink="/clientes/nuevo">
-    <i class="pi pi-plus"></i>
-    Nuevo
-  </button>
+  <div class="list-actions">
+    @if (contactsSupported) {
+      <button mat-stroked-button [disabled]="importing()" (click)="importFromContacts()">
+        <i class="pi pi-users"></i>
+        {{ importing() ? 'Importando…' : 'Importar contactos' }}
+      </button>
+    }
+    <button mat-raised-button routerLink="/clientes/nuevo">
+      <i class="pi pi-plus"></i>
+      Nuevo
+    </button>
+  </div>
 </div>
 
 <mat-form-field class="search-field" appearance="outline">
@@ -34,7 +42,7 @@
             <span class="client-name">{{ client.nombre }}</span>
             <span class="client-id">{{ client.identificacion }}</span>
           </div>
-          <i class="pi pi-user avatar"></i>
+          <img class="avatar" [src]="clientImage(client.id)" alt="" />
         </div>
         <div class="client-meta">
           <span>{{ client.correo || 'Sin correo' }}</span>

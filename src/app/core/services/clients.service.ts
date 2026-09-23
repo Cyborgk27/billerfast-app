@@ -6,6 +6,8 @@ import type { ApiResponse } from '../models/presentation';
 import type {
   ClientDto,
   CreateOrUpdateClientDto,
+  ImportClientDto,
+  ImportClientsResultDto,
 } from '../models/client.model';
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +31,12 @@ export class ClientsService {
   createClient(dto: CreateOrUpdateClientDto): Observable<string> {
     return this.http
       .post<ApiResponse<string>>(this.baseUrl, dto)
+      .pipe(map((res) => res.data));
+  }
+
+  importClients(clientes: ImportClientDto[]): Observable<ImportClientsResultDto> {
+    return this.http
+      .post<ApiResponse<ImportClientsResultDto>>(`${this.baseUrl}/import`, { clientes })
       .pipe(map((res) => res.data));
   }
 
